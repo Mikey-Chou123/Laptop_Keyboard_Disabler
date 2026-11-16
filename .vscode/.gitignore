@@ -3,8 +3,10 @@
 *.obj
 *.pdb
 *.ilk
+*.txt
 
 # Visual Studio
 .vs/
 
 # VS Code
+.clang-format

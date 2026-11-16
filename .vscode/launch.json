@@ -5,7 +5,7 @@
             "name": "Debug KeyboardGuard",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/KeyboardGuard.exe",
+            "program": "${workspaceFolder}/laptop_keyboard_disabler.exe",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build"
         }
