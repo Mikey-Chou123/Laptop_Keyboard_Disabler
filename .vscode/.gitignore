@@ -1,0 +1,10 @@
+# Compiled files
+*.exe
+*.obj
+*.pdb
+*.ilk
+
+# Visual Studio
+.vs/
+
+# VS Code

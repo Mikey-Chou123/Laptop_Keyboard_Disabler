@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug KeyboardGuard",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/KeyboardGuard.exe",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build"
+        }
+    ]
+}
