@@ -2,7 +2,23 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "create-build-folder",
+            "type": "shell",
+            "command": "New-Item",
+            "args": [
+                "-ItemType",
+                "Directory",
+                "-Force",
+                "-Path",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "compile",
             "type": "shell",
             "command": "cl",
             "args": [
@@ -12,14 +28,28 @@
                 "/nologo",
                 "/DUNICODE",
                 "/D_UNICODE",
-                "/Fe:laptop_keyboard_disabler.exe",
-                "*.cpp",
+                "/I${workspaceFolder}\\include",
+                "/Fo${workspaceFolder}\\build\\",
+                "/Fe${workspaceFolder}\\build\\laptop_keyboard_disabler.exe",
+
+                "${workspaceFolder}\\src\\keyboard.cpp",
+                "${workspaceFolder}\\src\\config.cpp",
+                "${workspaceFolder}\\src\\main.cpp",
+
                 "/link",
                 "/SUBSYSTEM:WINDOWS",
+                "/MANIFEST:NO",
                 "user32.lib",
                 "shell32.lib",
-                "setupapi.lib"
+                "setupapi.lib",
+                "ole32.lib",
+                "uuid.lib"
             ],
+            "dependsOn": "create-build-folder",
+            "dependsOrder": "sequence",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true

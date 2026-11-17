@@ -70,9 +70,9 @@ bool IsExternalBus(const std::wstring& instance_id) {
 
 bool IsExternal(const std::wstring& instance_id,
                 const std::set<std::wstring>& internal_ids) {
-                    if (internal_ids.count(instance_id) != 0){
-                        return false;
-                    } else {
-                        return IsExternalBus(instance_id);
-                    }
+  if (internal_ids.count(instance_id) != 0) {
+    return false;
+  } else {
+    return IsExternalBus(instance_id);
+  }
 }

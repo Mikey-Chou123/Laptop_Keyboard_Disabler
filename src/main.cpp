@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 
+#include "config.h"
 #include "keyboards.h"
 
 #pragma comment(lib, "User32.lib")
