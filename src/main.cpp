@@ -6,6 +6,7 @@
 #include <string>
 
 #include "config.h"
+#include "device.h"
 #include "keyboards.h"
 
 #pragma comment(lib, "User32.lib")
@@ -17,6 +18,8 @@ const UINT kWmTray = WM_APP + 1;
 const int kIdExit = 1001;
 const int kIdList = 1002;
 const int kIdCalibrate = 1003;
+const int kIdDisable = 1004;
+const int kIdEnable = 1005;
 const wchar_t kClassName[] = L"LaptopKeyboardDisablerWindow";
 
 NOTIFYICONDATAW tray_icon = {};
@@ -56,8 +59,39 @@ void Calibrate(HWND hwnd) {
     internal_ids.insert(keyboard.instance_id);
     text += keyboard.name + L"\n";
   }
+
   SaveInternalIds(internal_ids);
   MessageBoxW(hwnd, text.c_str(), L"Calibrate", MB_OK);
+}
+
+void SetInternalKeyboards(HWND hwnd, bool enable) {
+  if (internal_ids.empty()) {
+    MessageBoxW(hwnd, L"Please calibrate first.", L"Error",
+                MB_OK | MB_ICONWARNING);
+    return;
+  }
+
+  if (!enable && !HasExternalKeyboard(internal_ids)) {
+    MessageBoxW(hwnd, L"No external keyboard detected.", L"Error",
+                MB_OK | MB_ICONWARNING);
+    return;
+  }
+
+  int count_false = 0;
+  DWORD last_error = 0;
+  for (const auto& id : internal_ids) {
+    if (!SetKeyboardEnabled(id, enable)) {
+      ++count_false;
+      last_error = GetLastError();
+    }
+  }
+
+  if (count_false > 0) {
+    std::wstring text = std::to_wstring(count_false) +
+                        L" keyboard(s) could not be changed.\nError code: " +
+                        std::to_wstring(last_error);
+    MessageBoxW(hwnd, text.c_str(), L"Error", MB_OK | MB_ICONWARNING);
+  }
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM w_param,
@@ -71,6 +105,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM w_param,
         HMENU menu = CreatePopupMenu();
         AppendMenuW(menu, MF_STRING, kIdList, L"Show keyboards");
         AppendMenuW(menu, MF_STRING, kIdCalibrate, L"Calibrate");
+        AppendMenuW(menu, MF_STRING, kIdDisable, L"Disable internal keyboard");
+        AppendMenuW(menu, MF_STRING, kIdEnable, L"Enable internal keyboard");
         AppendMenuW(menu, MF_STRING, kIdExit, L"Exit");
 
         SetForegroundWindow(hwnd);
@@ -84,6 +120,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM w_param,
           ShowKeyboards(hwnd);
         } else if (choice == kIdCalibrate) {
           Calibrate(hwnd);
+        } else if (choice == kIdDisable) {
+          SetInternalKeyboards(hwnd, false);
+        } else if (choice == kIdEnable) {
+          SetInternalKeyboards(hwnd, true);
         } else if (choice == kIdExit) {
           DestroyWindow(hwnd);
         }
@@ -92,6 +132,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM w_param,
       return 0;
 
     case WM_DESTROY:
+      if (!internal_ids.empty()) {
+        SetInternalKeyboards(hwnd, true);
+      }
       Shell_NotifyIconW(NIM_DELETE, &tray_icon);
       PostQuitMessage(0);
       return 0;

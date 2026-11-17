@@ -30,12 +30,9 @@
                 "/D_UNICODE",
                 "/I${workspaceFolder}\\include",
                 "/Fo${workspaceFolder}\\build\\",
+                "/Fd${workspaceFolder}\\build\\",
                 "/Fe${workspaceFolder}\\build\\laptop_keyboard_disabler.exe",
-
-                "${workspaceFolder}\\src\\keyboard.cpp",
-                "${workspaceFolder}\\src\\config.cpp",
-                "${workspaceFolder}\\src\\main.cpp",
-
+                "${workspaceFolder}\\src\\*.cpp",
                 "/link",
                 "/SUBSYSTEM:WINDOWS",
                 "/MANIFEST:NO",
@@ -46,7 +43,25 @@
                 "uuid.lib"
             ],
             "dependsOn": "create-build-folder",
-            "dependsOrder": "sequence",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "mt",
+            "args": [
+                "-nologo",
+                "-manifest",
+                "${workspaceFolder}\\app.manifest",
+                {
+                    "value": "-outputresource:${workspaceFolder}\\build\\laptop_keyboard_disabler.exe;1",
+                    "quoting": "strong"
+                }
+            ],
+            "dependsOn": "compile",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -54,7 +69,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": "$msCompile"
+            "problemMatcher": []
         }
     ]
 }

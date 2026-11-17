@@ -76,3 +76,15 @@ bool IsExternal(const std::wstring& instance_id,
     return IsExternalBus(instance_id);
   }
 }
+
+bool HasExternalKeyboard(const std::set<std::wstring>& internal_ids) {
+  for (const auto& keyboard : ListKeyboards()){
+    if (IsExternal(keyboard.instance_id, internal_ids) == true){
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  return false;
+}
